@@ -9,8 +9,7 @@ dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ezelziniylvkzffuxvzc.supabase.co';
-const SUPABASE_SECRET_KEY = process.env.SUPABASE_ANON_KEY || 'sb_secret_IURLJu03OzeTDAtItMRk0Q_ukbi5GxE';
+
 
 // Create Supabase admin/server client using secret key safely on backend
 const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SECRET_KEY, {
