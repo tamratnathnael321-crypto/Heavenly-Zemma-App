@@ -1,0 +1,83 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --color-spotify-green: #1ed760;
+  --color-spotify-green-hover: #1fdf64;
+  --color-spotify-green-press: #169c46;
+  --color-spotify-black: #000000;
+  --color-spotify-base: #121212;
+  --color-spotify-card: #181818;
+  --color-spotify-card-hover: #242424;
+  --color-spotify-highlight: #2a2a2a;
+  --color-spotify-text: #ffffff;
+  --color-spotify-subtext: #a7a7a7;
+  --color-spotify-divider: #282828;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #000000;
+  color: #ffffff;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  touch-action: manipulation;
+  overscroll-behavior-y: none;
+}
+
+/* Safe area insets for notched mobile devices */
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pl-safe {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+.pr-safe {
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* Hide scrollbars for native app horizontal rails */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Range input styling for sleek Spotify scrubber */
+input[type="range"].spotify-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: #4d4d4d;
+  height: 4px;
+  border-radius: 2px;
+  outline: none;
+}
+input[type="range"].spotify-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffffff;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+input[type="range"].spotify-slider:hover::-webkit-slider-thumb {
+  transform: scale(1.2);
+  background: #1ed760;
+}
+input[type="range"].spotify-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: none;
+  cursor: pointer;
+}

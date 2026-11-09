@@ -1,0 +1,6 @@
+{
+  "name": "Heavenly Zemma",
+  "description": "Native-feeling music streaming mobile app with Spotify-inspired design, background audio, Supabase realtime updates, and offline caching.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
