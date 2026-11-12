@@ -1,0 +1,18 @@
+{
+  "name": "Heavenly Zemma",
+  "short_name": "Heavenly Zemma",
+  "description": "Your personal music library and player.",
+  "start_url": "./music-player-supabase-new-ui.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#121212",
+  "icons": [
+    {
+      "src": "./aurum-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

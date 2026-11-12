@@ -1,0 +1,9 @@
+{
+  "name": "heavenly-zema-telegram",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "music-metadata": "^12.3.5",
+    "telegram": "^2.26.22"
+  }
+}

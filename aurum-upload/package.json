@@ -1,0 +1,9 @@
+{
+  "name": "aurum-upload",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.119.0",
+    "music-metadata": "^12.3.5"
+  }
+}

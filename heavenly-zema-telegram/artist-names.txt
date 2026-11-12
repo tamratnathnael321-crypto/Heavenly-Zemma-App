@@ -1,0 +1,11 @@
+# Artist names.   Name as it appears in the song tags  =  English folder name
+# Spaces, the ፡ sign and quotes are ignored when matching, so "ዳንኤል አምደሚካኤል" matches "ዳንኤል ፡ አምደሚካኤል".
+# Artists not listed here: English names are used as they are, Amharic names are converted by sound
+# (which may spell them differently from your site), so add a line here for each new artist.
+
+አዲሱ ፡ ወርቁ = Addisu Worku
+አዜብ ፡ ኃይሉ = Azeb Hailu
+ዳንኤል ፡ አምደሚካኤል = Daniel Amdemichael
+እንዳልካቸው ፡ 'አናዋ' ፡ ሐዋዝ = Endalkachew Hawaz
+ለዓለም ፡ 'ላሊ' ፡ ጥላሁን = Lealem 'Lali' Tilahun, Dr
+ዮሐንስ ፡ 'ጆኒ' ፡ ግርማ = Yohannes Girma

@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Zemma Console</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Ethiopic:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1b2036;--side:#1f2747;--paper:#f3f4f9;--card:#fff;--line:#e1e4ee;--mut:#697090;--gold:#b8801f;--goldbg:#f7ecd5;--bad:#b3261e}
+*{box-sizing:border-box}body{margin:0;font:14px/1.5 Inter,'Noto Sans Ethiopic',sans-serif;color:var(--ink);background:var(--paper)}
+button{font:inherit;cursor:pointer}:focus-visible{outline:2px solid var(--gold);outline-offset:2px}.hide{display:none!important}
+#login{min-height:100vh;display:grid;place-items:center;padding:20px}
+#login form{width:min(360px,100%);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:28px;box-shadow:0 10px 30px rgba(31,39,71,.08)}
+#login h1{font-size:22px;margin:0 0 4px}#login p{margin:0 0 14px;color:var(--mut)}
+label{display:block;font-weight:600;margin:10px 0 4px}label input[type=checkbox]{margin-left:8px}
+input,select,textarea{width:100%;font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}input[type=checkbox]{width:auto}
+.primary{background:var(--ink);color:#fff;border:0;border-radius:8px;padding:9px 16px;font-weight:600}
+.ghost{background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 11px;color:var(--ink)}.ghost:hover{border-color:var(--gold)}.danger{color:var(--bad)}
+.err{color:var(--bad);min-height:20px;margin-top:8px}
+#app{display:grid;grid-template-columns:200px 1fr;min-height:100vh}
+nav{background:var(--side);color:#cfd4ee;padding:18px 10px;position:sticky;top:0;height:100vh}
+nav b{display:block;color:#fff;font-size:17px;padding:0 10px 14px}
+nav button{display:block;width:100%;text-align:left;background:none;border:0;color:inherit;padding:9px 10px;border-radius:8px;margin-bottom:2px}
+nav button.on{background:#323c66;color:#fff;box-shadow:inset 3px 0 var(--gold)}nav .srch{background:#2b3560;margin-bottom:12px}
+nav .out{position:absolute;bottom:18px;left:10px;right:10px;width:auto}
+main{padding:22px 26px;min-width:0}h2{margin:0 0 2px;font-size:21px}.sub{color:var(--mut);margin:0 0 16px}
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:16px}
+.strip div{padding:13px 15px;border-right:1px solid var(--line)}.strip div:last-child{border:0}.strip strong{display:block;font-size:22px}.strip span{color:var(--mut);font-size:12px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}.box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px;margin-bottom:16px}.box h3{margin:0 0 10px;font-size:15px}
+.bars{display:flex;align-items:flex-end;gap:4px;height:100px}.bars i{flex:1;background:var(--gold);border-radius:3px 3px 0 0;min-height:3px}
+.axis{display:flex;justify-content:space-between;color:var(--mut);font-size:11px;margin-top:5px}
+.tools{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}.tools input{max-width:300px}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line)}th{font-size:12px;color:var(--mut);background:#fafbfd}tr:last-child td{border:0}
+td.act{white-space:nowrap;text-align:right}td.act button{margin-left:5px}.wrap{overflow-x:auto}.empty{padding:22px;text-align:center;color:var(--mut)}
+.tag{display:inline-block;padding:1px 8px;border-radius:99px;background:var(--goldbg);color:var(--gold);font-size:12px;font-weight:600}
+.lib{display:grid;grid-template-columns:230px 310px minmax(0,1fr);gap:14px;align-items:start}
+.pane{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;max-height:calc(100vh - 90px);overflow:auto}
+.ph{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:wrap}.ph h3{margin:0;font-size:15px}
+.it{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:9px;cursor:pointer}.it:hover{background:var(--paper)}.it.on{background:var(--goldbg)}.it.over{outline:2px dashed var(--gold)}
+.it small{color:var(--mut);display:block}.it .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cv{width:42px;height:42px;border-radius:8px;background:#e8eaf3 center/cover;display:grid;place-items:center;font-weight:700;color:var(--mut);flex:none}.cv.lg{width:64px;height:64px;font-size:22px}
+.trk{display:grid;grid-template-columns:18px 26px minmax(0,1fr) 140px 46px auto;gap:6px;align-items:center;padding:5px 2px;border-bottom:1px solid var(--line)}
+.trk.dg{opacity:.35}.trk.over{box-shadow:0 -2px var(--gold)}.grip{cursor:grab;color:var(--mut)}.trk .ar{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}.grp{margin-bottom:14px}.grp table{margin:8px 0}
+.ie{border:1px solid transparent;background:transparent;padding:5px 6px}.ie:hover,.ie:focus{border-color:var(--line);background:#fff}
+.hint{color:var(--mut);font-size:12px;margin:8px 2px}
+dialog{border:1px solid var(--line);border-radius:14px;padding:22px;width:min(460px,92vw)}dialog::backdrop{background:rgba(20,24,45,.45)}dialog h3{margin:0 0 6px}.row{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+#pal{padding:12px;top:12vh;margin:0 auto}#pal .r{padding:8px 10px;border-radius:8px;cursor:pointer}#pal .r:hover{background:var(--goldbg)}#pal small{color:var(--mut)}
+#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:8px;opacity:0;pointer-events:none;transition:.2s}
+#toast.show{opacity:1;transform:translate(-50%,0)}#toast.bad{background:var(--bad)}
+@media(max-width:1000px){.lib{grid-template-columns:1fr}.pane{max-height:none}}
+@media(max-width:760px){#app{display:block}nav{position:static;height:auto;display:flex;flex-wrap:wrap;gap:4px;padding:10px}nav b{width:100%}nav button{width:auto}nav .out{position:static}main{padding:16px 12px}.two{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style><style id="zemma-theme">
+:root{--ink:#fff;--side:#0a0a0a;--paper:#000;--card:#151515;--line:#262626;--mut:#a3a3a3;--gold:#1ed760;--goldbg:rgba(30,215,96,.14);--bad:#ff5c5c;color-scheme:dark}
+body{background:radial-gradient(1200px 500px at 70% -10%,rgba(30,215,96,.10),transparent 60%),#000;color:#fff}
+nav{background:#0a0a0a;border-right:1px solid var(--line);color:#b3b3b3}
+nav button{border-radius:10px;font-weight:600;transition:background .15s,color .15s}nav button:hover{background:#1a1a1a;color:#fff}
+nav button.on{background:var(--goldbg);color:var(--gold);box-shadow:none}nav .srch{background:#1a1a1a;color:#fff}
+input,select,textarea,.ghost,.ie:hover,.ie:focus{background:#222;color:#fff;border-color:#333}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:0;border-color:transparent}
+.ghost{border-radius:999px;transition:background .15s}.ghost:hover{background:#2e2e2e;border-color:var(--gold)}
+.primary,.btn{background:var(--gold);color:#04210f;border-radius:999px;font-weight:700}
+.pane,.box,.strip,table,#login form,dialog{background:var(--card);border-color:var(--line);color:#fff;border-radius:16px}
+th{background:#1c1c1c}.cv{background-color:#262626}.it,.trk{border-radius:10px}.it:hover,.trk:hover{background:#1f1f1f}
+dialog{border:1px solid var(--line);box-shadow:0 30px 80px rgba(0,0,0,.7);width:min(560px,94vw);max-height:90vh;overflow:auto}
+dialog form{display:grid;gap:4px}dialog textarea{min-height:90px;resize:vertical}dialog label{font-size:13px;color:var(--mut)}
+dialog::backdrop{background:rgba(0,0,0,.7)}#toast{background:var(--gold);color:#04210f;font-weight:700}#toast.bad{background:var(--bad);color:#fff}
+@media(max-width:820px){#app{display:block}nav{position:static;height:auto;display:flex;gap:6px;overflow-x:auto;padding:10px}nav b{display:none}nav button{width:auto;white-space:nowrap}
+.lib{display:block}.trk{grid-template-columns:18px minmax(0,1fr) auto}.trk>span:nth-child(2),.trk>button.ar{display:none}}
+</style>
+</head><body>
+<section id="login" class="hide"><form id="lf"><h1>Zemma Console</h1><p>Sign in with your admin account.</p>
+<label for="em">Email</label><input id="em" type="email" autocomplete="username" required>
+<label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password" required>
+<div class="err" id="loginErr" role="alert"></div><button class="primary" style="width:100%">Sign in</button></form></section>
+<div id="app" class="hide"><nav><b>Zemma Console</b>
+<button class="srch" id="sbtn">Search… (Ctrl K)</button>
+<button data-v="dash">Dashboard</button><button data-v="lib">Library</button><button data-v="dupes">Tidy up</button><button data-v="ai">AI names</button><button data-v="rec">Recommended</button><button data-v="users">Listeners</button><button data-v="log">Activity log</button>
+<button class="out" id="out">Sign out</button></nav><main id="main"></main></div>
+<dialog id="dlg"></dialog><dialog id="pal"><input id="pq" placeholder="Search artists, albums, songs" autocomplete="off"><div id="pr"></div></dialog><div id="toast" role="status"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const SB='https://ezelziniylvkzffuxvzc.supabase.co',sb=supabase.createClient(SB,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZWx6aW5peWx2a3pmZnV4dnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MDAzMDMsImV4cCI6MjEwODE3NjMwM30.gU1hsnhLuAhZ_V9QTfIU2yjKSMV8JikTBkFeu7UZwAg');
+const $=s=>document.querySelector(s),M=()=>$('#main');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>Number(n||0).toLocaleString(),mmss=s=>Math.floor((s||0)/60)+':'+String((s||0)%60).padStart(2,'0');
+const day=d=>d?new Date(d).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'}):'never';
+const pub=(b,p)=>!p?'':/^https?:/.test(p)?p:SB+'/storage/v1/object/public/'+b+'/'+encodeURI(p);
+const slug=s=>s.normalize('NFKD').replace(/[^\x00-\x7F]/g,'').toLowerCase().replace(/[^a-z0-9.]+/g,'-').replace(/^-+|-+$/g,'')||'file';
+let me=null,tier=['free','premium'],L={a:null,al:null,q:''},A=[],AL=[],T=[],dk=null,dId=null;
+const toast=(m,bad)=>{const t=$('#toast');t.textContent=m;t.className='show'+(bad?' bad':'');clearTimeout(toast.t);toast.t=setTimeout(()=>t.className='',3200)};
+const fail=e=>{toast(e.message||String(e),true);return true};
+const log=(a,d)=>sb.from('admin_audit_log').insert({action:a,detail:d});
+const show=id=>['login','app'].forEach(x=>$('#'+x).classList.toggle('hide',x!==id));
+const tile=(n,u,c='')=>`<div class="cv ${c}" style="background-image:url('${esc(pub('Album Arts',u))}')">${u?'':esc((n||'?')[0])}</div>`;
+async function up(path,file,bucket='Album Arts'){const{error}=await sb.storage.from(bucket).upload(path,file,{contentType:file.type});if(error)throw error;return path}
+const dur=f=>new Promise(r=>{const a=new Audio(URL.createObjectURL(f));a.onloadedmetadata=()=>r(Math.max(1,Math.round(a.duration)||1));a.onerror=()=>r(1)});
+
+async function boot(){
+  const{data:{session}}=await sb.auth.getSession();if(!session)return show('login');
+  const{data}=await sb.from('admins').select('user_id').maybeSingle();
+  if(!data){await sb.auth.signOut();$('#loginErr').textContent='This account does not have admin access.';return show('login')}
+  me=session.user;show('app');go('lib');
+}
+$('#lf').onsubmit=async e=>{e.preventDefault();const{error}=await sb.auth.signInWithPassword({email:$('#em').value,password:$('#pw').value});error?$('#loginErr').textContent=error.message:boot()};
+$('#out').onclick=async()=>{await sb.auth.signOut();location.reload()};
+document.querySelector('nav').onclick=e=>{const b=e.target.closest('[data-v]');if(b)go(b.dataset.v)};
+function go(v){document.querySelectorAll('nav [data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));M().innerHTML='<p class="sub">Loading…</p>';views[v]()}
+
+function form(title,fields,save,ok='Save changes'){
+  const d=$('#dlg');
+  d.innerHTML=`<form method="dialog"><h3>${esc(title)}</h3>`+fields.map(f=>`<label>${esc(f.l)}`+(
+    f.t==='check'?`<input type="checkbox" name="${f.n}" ${f.v?'checked':''}>`:
+    f.t==='area'?`<textarea name="${f.n}" rows="3">${esc(f.v)}</textarea>`:
+    f.t==='select'?`<select name="${f.n}">${f.o.map(o=>`<option value="${esc(o[0])}" ${o[0]==f.v?'selected':''}>${esc(o[1])}</option>`).join('')}</select>`:
+    f.t==='file'?`<input type="file" name="${f.n}" accept="${f.a||'image/*'}">`:
+    `<input name="${f.n}" type="${f.t||'text'}" value="${esc(f.v)}">`)+`</label>`).join('')+
+    `<div class="row"><button value="cancel" class="ghost">Cancel</button><button value="ok" class="primary">${ok}</button></div></form>`;
+  d.showModal();
+  d.querySelector('form').onsubmit=async e=>{if(e.submitter.value!=='ok')return;const fd=new FormData(e.target),o={};
+    fields.forEach(f=>o[f.n]=f.t==='check'?fd.get(f.n)==='on':f.t==='file'?(fd.get(f.n)?.size?fd.get(f.n):null):fd.get(f.n));
+    try{await save(o)}catch(x){fail(x)}};
+}
+const head=(t,s)=>`<h2>${t}</h2><p class="sub">${s}</p>`;
+const table=(c,r)=>r.length?`<div class="wrap"><table><thead><tr>${c.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${r.join('')}</tbody></table></div>`:'<div class="box empty">Nothing here yet.</div>';
+const bars=r=>{const mx=Math.max(1,...r.map(x=>x.n));return`<div class="bars">${r.map(x=>`<i style="height:${Math.max(3,x.n/mx*100)}%" title="${x.d}: ${x.n}"></i>`).join('')}</div><div class="axis"><span>${r[0]?.d||''}</span><span>${r.at(-1)?.d||''}</span></div>`};
+
+/* ---------- search palette ---------- */
+function openPal(){$('#pal').showModal();$('#pq').value='';$('#pr').innerHTML='';$('#pq').focus()}
+$('#sbtn').onclick=openPal;
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'&&me){e.preventDefault();openPal()}});
+let pt;$('#pq').oninput=e=>{clearTimeout(pt);pt=setTimeout(async()=>{const q=e.target.value.trim();if(!q){$('#pr').innerHTML='';return}const l=`%${q}%`;
+  const[a,b,c]=await Promise.all([sb.from('artists').select('id,name').ilike('name',l).limit(5),sb.from('albums').select('id,title,artist_id,artists(name)').ilike('title',l).limit(5),sb.from('songs').select('id,title,album_id,artist_id,artists(name),albums(title)').ilike('title',l).limit(6)]);
+  $('#pr').innerHTML=[...(a.data||[]).map(x=>`<div class="r" data-a="${x.id}">${esc(x.name)} <small>Artist</small></div>`),...(b.data||[]).map(x=>`<div class="r" data-a="${x.artist_id}" data-l="${x.id}">${esc(x.title)} <small>Album · ${esc(x.artists?.name)}</small></div>`),...(c.data||[]).map(x=>`<div class="r" data-a="${x.artist_id}" data-l="${x.album_id||''}">${esc(x.title)} <small>Song · ${esc(x.artists?.name)} · ${esc(x.albums?.title)}</small></div>`)].join('')||'<p class="sub">Nothing found.</p>'},250)};
+$('#pr').onclick=e=>{const r=e.target.closest('.r');if(!r)return;$('#pal').close();L.a=r.dataset.a;L.al=r.dataset.l||null;go('lib')};
+
+/* ---------- views ---------- */
+const views={
+async dash(){
+  const{data:d,error}=await sb.rpc('admin_dashboard');if(error&&fail(error))return;
+  const k=[['Listeners',d.users],['Joined this week',d.new_users_7d],['Songs',d.songs],['Albums',d.albums],['Artists',d.artists],['Plays',d.plays],['Plays this week',d.plays_7d],['Favorites',d.favorites],['Playlists',d.playlists]];
+  const li=(a,b)=>`<div style="display:flex;justify-content:space-between;padding:4px 0"><span>${a}</span><b>${b}</b></div>`;
+  M().innerHTML=head('Dashboard','How Heavenly Zemma is doing right now.')+`<div class="strip">${k.map(x=>`<div><strong>${fmt(x[1])}</strong><span>${x[0]}</span></div>`).join('')}</div>
+  <div class="two"><div class="box"><h3>Plays, last 14 days</h3>${bars(d.plays_by_day)}</div><div class="box"><h3>New listeners, last 14 days</h3>${bars(d.signups_by_day)}</div></div>
+  <div class="two"><div class="box"><h3>Most played songs</h3>${d.top_songs.map(s=>li(esc(s.title)+' <small style="color:var(--mut)">'+esc(s.artist)+'</small>',fmt(s.n))).join('')||'<p class="sub">No plays yet.</p>'}</div>
+  <div class="box"><h3>Plans</h3>${Object.entries(d.tiers).map(([t,n])=>li('<span class="tag">'+esc(t)+'</span>',fmt(n))).join('')}</div></div>`;
+},
+
+async lib(){
+  M().innerHTML=`<div class="lib"><section class="pane" id="c1"><div class="ph"><h3>Artists</h3><button class="ghost" id="na">+ New</button></div><input id="aq" placeholder="Filter artists" value="${esc(L.q)}"><div id="alist"></div></section><section class="pane" id="c2"></section><section class="pane" id="c3"></section></div>`;
+  const c1=$('#c1'),c2=$('#c2'),c3=$('#c3');
+  c1.onclick=e=>{const x=e.target.closest('[data-a]');if(x)pick(x.dataset.a);if(e.target.id==='na')editArtist()};
+  c1.oninput=e=>{if(e.target.id==='aq'){L.q=e.target.value;drawArtists()}};
+  c1.ondragover=e=>{const x=e.target.closest('[data-a]');if(x&&dk==='album'){e.preventDefault();x.classList.add('over')}};
+  c1.ondragleave=e=>e.target.closest('[data-a]')?.classList.remove('over');
+  c1.ondrop=async e=>{const x=e.target.closest('[data-a]');if(!x||dk!=='album')return;e.preventDefault();await moveAlbum(dId,x.dataset.a)};
+  c2.onclick=e=>{const b=e.target.closest('button'),x=e.target.closest('[data-l]');
+    if(b?.id==='ea')return editArtist(A.find(a=>a.id===L.a));if(b?.id==='ma')return mergeArtist();if(b?.id==='da')return delArtist();if(b?.id==='nl')return editAlbum();
+    if(b?.dataset.el)return editAlbum(AL.find(a=>a.id===b.dataset.el));if(x)pickAlbum(x.dataset.l)};
+  c2.ondragstart=e=>{const x=e.target.closest('[data-l]');if(x){dk='album';dId=x.dataset.l}};
+  c2.ondragover=e=>{const x=e.target.closest('[data-l]');if(x&&dk==='song'){e.preventDefault();x.classList.add('over')}};
+  c2.ondragleave=e=>e.target.closest('[data-l]')?.classList.remove('over');
+  c2.ondrop=async e=>{const x=e.target.closest('[data-l]');if(!x||dk!=='song')return;e.preventDefault();await moveSong(dId,x.dataset.l)};
+  c3.onclick=async e=>{const b=e.target.closest('button');if(!b)return;const s=T.find(t=>t.id===b.dataset.s);
+    if(b.id==='eal')return editAlbum(AL.find(a=>a.id===L.al));if(b.id==='dal')return delAlbum();if(b.id==='add')return pickSongs();if(b.id==='mc')return makeColl();if(b.id==='mal')return mergeAlbum();if(b.dataset.ar)return songArtist(s);
+    if(b.dataset.ed)return editSong(s);if(b.dataset.p)return play(s);if(b.dataset.m)return moveDialog(s);
+    if(b.dataset.r){const{error}=await sb.from('recommended_songs').insert({song_id:s.id,position:999});return error?fail(error):(toast('Added to recommended songs'),log('Recommended a song',s.title))}
+    if(b.dataset.d&&confirm(`Delete "${s.title}"?`)){const{error}=await sb.from('songs').delete().eq('id',s.id);if(error)return fail(error);await log('Deleted a song',s.title);loadTracks();loadAlbums(true)}};
+  c3.onchange=async e=>{const t=e.target,s=T.find(x=>x.id===t.dataset.i);if(!s)return;const f=t.dataset.f,v=t.type==='checkbox'?t.checked:t.value.trim();if(f==='title'&&!v)return;
+    const{error}=await sb.from('songs').update({[f]:v}).eq('id',s.id);error?fail(error):(s[f]=v,toast('Saved'),log('Edited a song',s.title))};
+  c3.ondragstart=e=>{const x=e.target.closest('.trk');if(x){dk='song';dId=x.dataset.id;x.classList.add('dg')}};
+  c3.ondragend=e=>e.target.closest('.trk')?.classList.remove('dg');
+  c3.ondragover=e=>{const x=e.target.closest('.trk');if(x&&dk==='song'){e.preventDefault();c3.querySelectorAll('.over').forEach(y=>y.classList.remove('over'));x.classList.add('over')}};
+  c3.ondrop=async e=>{const x=e.target.closest('.trk');if(!x||dk!=='song')return;e.preventDefault();const from=T.findIndex(t=>t.id===dId);if(from<0)return;
+    T.splice(+x.dataset.i,0,T.splice(from,1)[0]);const{error}=await sb.rpc('admin_reorder_songs',{ids:T.map(t=>t.id)});if(error)return fail(error);await log('Reordered songs','');loadTracks()};
+  const{data,error}=await sb.from('artists').select('id,name,bio,is_verified,profile_image_url,albums(count)').order('name');if(error&&fail(error))return;
+  A=data;if(!L.a)L.a=A[0]?.id;drawArtists();await loadAlbums();
+},
+
+async dupes(){
+  const{data,error}=await sb.from('albums').select('id,title,release_type,release_date,artists(name),songs(count)').limit(2000);if(error&&fail(error))return;
+  const g={};data.forEach(a=>{const k=a.title.trim().toLowerCase();(g[k]=g[k]||[]).push(a)});
+  const groups=Object.values(g).filter(x=>x.length>1);
+  M().innerHTML=head('Tidy up','Albums with the same name. Wrap them into one collection when many artists share an album, or merge copies of one album.')+
+   (groups.map((x,i)=>{const n=x.reduce((t,a)=>t+(a.songs?.[0]?.count||0),0);return`<div class="box grp"><h3>${esc(x[0].title)} <span class="tag">${x.length} copies · ${n} songs</span></h3>`+
+    table(['Artist','Songs','Year','Type'],x.map(a=>`<tr><td>${esc(a.artists?.name)}</td><td>${a.songs?.[0]?.count||0}</td><td>${(a.release_date||'').slice(0,4)}</td><td>${esc(a.release_type)}</td></tr>`))+
+    `<button class="primary" data-w="${i}" data-c="1">Wrap into one collection</button> <button class="ghost" data-w="${i}" data-c="0">Merge into one album</button></div>`}).join('')||'<div class="box empty">No albums share a name. Everything is tidy.</div>');
+  M().onclick=async e=>{const b=e.target.closest('button[data-w]');if(!b)return;const x=groups[+b.dataset.w],coll=b.dataset.c==='1';
+    if(!confirm(coll?`Wrap the ${x.length} copies of "${x[0].title}" into ONE collection? Every song keeps its own artist.`:`Merge the ${x.length} copies of "${x[0].title}" into one album?`))return;
+    const sorted=[...x].sort((a,c)=>(c.songs?.[0]?.count||0)-(a.songs?.[0]?.count||0)),keep=sorted[0];
+    const{error}=await sb.rpc('admin_wrap_collection',{into_album:keep.id,other_albums:sorted.slice(1).map(a=>a.id),as_coll:coll});if(error)return fail(error);
+    await log(coll?'Wrapped albums into a collection':'Merged albums',x[0].title);toast('Done');views.dupes()};
+},
+
+async rec(){
+  const{data:rows,error}=await sb.from('recommended_songs').select('id,position,note,active,songs(title,artists(name))').order('position');if(error&&fail(error))return;
+  M().innerHTML=head('Recommended songs','Listeners see these, in this order, wherever your site shows recommendations.')+`<div class="box"><h3>Add a song</h3><input id="rs" placeholder="Search songs by title" autocomplete="off"><div id="rr"></div></div>`+
+   table(['#','Song','Note','Shown',''],rows.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.songs?.title)}<br><small style="color:var(--mut)">${esc(r.songs?.artists?.name)}</small></td><td><input data-note="${r.id}" value="${esc(r.note)}" placeholder="Optional note"></td><td><input type="checkbox" data-on="${r.id}" ${r.active?'checked':''}></td>
+   <td class="act"><button class="ghost" data-up="${i}" ${i?'':'disabled'}>Up</button><button class="ghost" data-dn="${i}" ${i<rows.length-1?'':'disabled'}>Down</button><button class="ghost danger" data-rm="${r.id}">Remove</button></td></tr>`));
+  let t;$('#rs').oninput=e=>{clearTimeout(t);t=setTimeout(async()=>{const q=e.target.value.trim();if(!q){$('#rr').innerHTML='';return}
+    const{data:s}=await sb.from('songs').select('id,title,artists(name)').ilike('title','%'+q+'%').limit(8);
+    $('#rr').innerHTML=(s||[]).map(x=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0"><span>${esc(x.title)} <small style="color:var(--mut)">${esc(x.artists?.name)}</small></span><button class="ghost" data-add="${x.id}">Add</button></div>`).join('')||'<p class="sub">No songs match.</p>'},250)};
+  const re=async()=>{await Promise.all(rows.map((r,j)=>sb.from('recommended_songs').update({position:j+1}).eq('id',r.id)));await log('Reordered recommendations','');go('rec')};
+  M().onclick=async e=>{const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.add){const{error}=await sb.from('recommended_songs').insert({song_id:b.dataset.add,position:rows.length+1});if(error)return fail(error);await log('Recommended a song',b.dataset.add);go('rec')}
+    if(b.dataset.rm){const{error}=await sb.from('recommended_songs').delete().eq('id',b.dataset.rm);if(error)return fail(error);await log('Removed a recommendation','');go('rec')}
+    if(b.dataset.up){const i=+b.dataset.up;rows.splice(i-1,0,rows.splice(i,1)[0]);re()}if(b.dataset.dn){const i=+b.dataset.dn;rows.splice(i+1,0,rows.splice(i,1)[0]);re()}};
+  M().onchange=async e=>{const t=e.target;
+    if(t.dataset.on){const{error}=await sb.from('recommended_songs').update({active:t.checked}).eq('id',t.dataset.on);error?fail(error):(toast(t.checked?'Shown':'Hidden'),log('Toggled a recommendation',''))}
+    if(t.dataset.note){const{error}=await sb.from('recommended_songs').update({note:t.value||null}).eq('id',t.dataset.note);error?fail(error):toast('Note saved')}};
+},
+
+async users(q=''){
+  const{data,error}=await sb.from('users').select('id,username,display_name,email,subscription_tier,country_code,created_at').order('created_at',{ascending:false}).limit(1000);if(error&&fail(error))return;
+  const s=q.toLowerCase(),list=data.filter(u=>[u.username,u.display_name,u.email].join(' ').toLowerCase().includes(s));
+  M().innerHTML=head('Listeners',fmt(data.length)+' accounts.')+`<div class="tools"><input id="uq" placeholder="Search name, username or email" value="${esc(q)}"><button class="ghost" id="csv">Export CSV</button></div>`+
+   table(['Name','Email','Plan','Country','Joined',''],list.slice(0,100).map(u=>`<tr><td>${esc(u.display_name)}<br><small style="color:var(--mut)">@${esc(u.username)}</small></td><td>${esc(u.email)}</td><td><span class="tag">${esc(u.subscription_tier)}</span></td><td>${esc(u.country_code)}</td><td>${day(u.created_at)}</td><td class="act"><button class="ghost" data-u="${u.id}">View</button></td></tr>`));
+  $('#uq').onkeydown=e=>{if(e.key==='Enter')views.users(e.target.value.trim())};
+  $('#csv').onclick=()=>{const c=v=>'"'+String(v??'').replace(/"/g,'""')+'"',r=['username,display_name,email,plan,country,joined'].concat(data.map(u=>[u.username,u.display_name,u.email,u.subscription_tier,u.country_code,u.created_at].map(c).join(',')));
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([r.join('\n')],{type:'text/csv'}));a.download='listeners.csv';a.click();log('Exported listeners','')};
+  M().onclick=async e=>{const b=e.target.closest('button[data-u]');if(!b)return;const u=data.find(x=>x.id===b.dataset.u);const{data:st}=await sb.rpc('admin_user_stats',{uid:u.id});
+    form(`${u.display_name}: ${st?.plays??0} plays, ${st?.favorites??0} favorites, ${st?.playlists??0} playlists`,[{n:'t',l:'Plan',t:'select',v:u.subscription_tier,o:tier.map(x=>[x,x])},{n:'d',l:'Display name',v:u.display_name}],async o=>{
+      const{data:upd,error}=await sb.rpc('admin_set_user_plan',{uid:u.id,new_tier:o.t,new_name:o.d.trim()});if(error)return fail(new Error(error.message+(/function|schema cache/i.test(error.message)?' (run backend/admin_set_plan.sql in Supabase)':'')));if(upd?.subscription_tier!==o.t)return fail(new Error('The database did not save the change.'));await log('Updated a listener',u.email+' → '+o.t);toast('Saved');views.users(q)})};
+},
+
+async log(){
+  const{data,error}=await sb.from('admin_audit_log').select('id,admin_id,action,detail,created_at').order('created_at',{ascending:false}).limit(100);if(error&&fail(error))return;
+  M().innerHTML=head('Activity log','The last 100 things admins changed.')+table(['When','Who','What','Detail'],data.map(l=>`<tr><td>${day(l.created_at)}</td><td>${l.admin_id===me.id?'You':'Another admin'}</td><td>${esc(l.action)}</td><td>${esc(l.detail)}</td></tr>`));
+}};
+
+/* ---------- library: artists → albums → songs ---------- */
+function drawArtists(){
+  const q=L.q.toLowerCase(),list=A.filter(a=>a.name.toLowerCase().includes(q)).slice(0,200);
+  $('#alist').innerHTML=list.map(a=>`<div class="it ${a.id===L.a?'on':''}" data-a="${a.id}">${tile(a.name,a.profile_image_url)}<div class="nm">${esc(a.name)}<small>${a.albums?.[0]?.count||0} albums${a.is_verified?' · verified':''}</small></div></div>`).join('')||'<p class="hint">No artists match.</p>';
+}
+function pick(id){L.a=id;L.al=null;drawArtists();loadAlbums()}
+async function loadAlbums(keep){
+  const{data,error}=await sb.from('albums').select('id,title,cover_art_url,release_type,release_date,artist_id,songs(count)').eq('artist_id',L.a).order('release_date',{ascending:false});if(error&&fail(error))return;
+  AL=data;if(!keep&&!AL.find(a=>a.id===L.al))L.al=AL[0]?.id||null;drawAlbums();loadTracks();
+}
+function drawAlbums(){
+  const a=A.find(x=>x.id===L.a);if(!a){$('#c2').innerHTML='<p class="hint">Choose an artist.</p>';return}
+  $('#c2').innerHTML=`<div class="ph"><h3>${esc(a.name)}</h3><span><button class="ghost" id="ea">Edit</button> <button class="ghost" id="ma">Merge</button> <button class="ghost danger" id="da">Delete</button></span></div>
+  <div class="ph"><b>Albums</b><button class="ghost" id="nl">+ New album</button></div>`+(AL.map(l=>`<div class="it ${l.id===L.al?'on':''}" data-l="${l.id}" draggable="true">${tile(l.title,l.cover_art_url)}<div class="nm">${esc(l.title)}<small>${l.release_date?l.release_date.slice(0,4)+' · ':''}${esc(l.release_type)} · ${l.songs?.[0]?.count||0} songs</small></div><button class="ghost" data-el="${l.id}">Edit</button></div>`).join('')||'<p class="hint">No albums yet.</p>')+
+  '<p class="hint">Tip: drag an album onto another artist to move it there. Drag a song onto an album to move it.</p>';
+}
+function pickAlbum(id){L.al=id;drawAlbums();loadTracks()}
+async function loadTracks(){
+  if(!L.al){T=[];return drawTracks()}
+  const{data,error}=await sb.from('songs').select('id,title,track_number,duration_seconds,is_explicit,file_url,artist_id,artists(name)').eq('album_id',L.al).order('track_number',{nullsFirst:false});if(error&&fail(error))return;T=data;drawTracks();
+}
+function drawTracks(){
+  const l=AL.find(x=>x.id===L.al);if(!l){$('#c3').innerHTML='<p class="hint">Choose an album to see and edit its songs.</p>';return}
+  $('#c3').innerHTML=`<div class="ph"><span style="display:flex;gap:12px;align-items:center">${tile(l.title,l.cover_art_url,'lg')}<span><h3>${esc(l.title)} ${l.release_type==='compilation'?'<span class="tag">Collection</span>':''}</h3><small style="color:var(--mut)">${T.length} songs</small></span></span><span><button class="ghost" id="add">+ Add songs</button> ${l.release_type==='compilation'?'':'<button class="ghost" id="mc">Make collection</button> '}<button class="ghost" id="mal">Merge into…</button> <button class="ghost" id="eal">Edit album</button> <button class="ghost danger" id="dal">Delete</button></span></div>`+
+  (T.map((s,i)=>`<div class="trk" data-id="${s.id}" data-i="${i}" draggable="true"><span class="grip" title="Drag to reorder">⋮⋮</span><span>${i+1}</span><input class="ie" data-i="${s.id}" data-f="title" value="${esc(s.title)}"><button class="ghost ar" data-ar="1" data-s="${s.id}" title="Change the artist of this song">${esc(s.artists?.name)}</button><span style="color:var(--mut)">${mmss(s.duration_seconds)}</span>
+  <span><button class="ghost" data-ed="1" data-s="${s.id}">Edit</button> <button class="ghost" data-p="1" data-s="${s.id}">Play</button> <button class="ghost" data-r="1" data-s="${s.id}">Recommend</button> <button class="ghost" data-m="1" data-s="${s.id}">Move</button> <button class="ghost danger" data-d="1" data-s="${s.id}">Delete</button></span></div>`).join('')||'<p class="hint">No songs yet. Use “Add songs” to upload.</p>')+'<p class="hint">Edit a title right in the list. Drag ⋮⋮ to reorder.</p>';
+}
+const au=new Audio();let playing=null;
+async function play(s){if(playing===s.id&&!au.paused){au.pause();return}const{data,error}=await sb.storage.from('Songs').createSignedUrl(s.file_url,3600);if(error)return fail(error);au.src=data.signedUrl;playing=s.id;au.play()}
+async function editArtist(a){
+  const X=extraFields(a?(await sb.from('artists').select('*').eq('id',a.id).single()).data:null,['name','bio','is_verified']);
+  form(a?'Edit artist':'New artist',[{n:'name',l:'Name (English)',v:a?.name},{n:'bio',l:'Bio',t:'area',v:a?.bio},{n:'is_verified',l:'Verified',t:'check',v:a?.is_verified},{n:'photo',l:'Profile picture',t:'file'},...X],async o=>{
+    const row={...extraRow(X,o),name:o.name.trim(),bio:o.bio||null,is_verified:o.is_verified};
+    const r=a?await sb.from('artists').update(row).eq('id',a.id).select('id').single():await sb.from('artists').insert(row).select('id').single();if(r.error)return fail(r.error);
+    if(o.photo){const p=await up(`artists/${r.data.id}-${Date.now()}.${slug(o.photo.name.split('.').pop())}`,o.photo);await sb.from('artists').update({profile_image_url:p}).eq('id',r.data.id)}
+    await log(a?'Edited an artist':'Created an artist',row.name);toast('Saved');L.a=r.data.id;views.lib()});
+}
+function mergeArtist(){const a=A.find(x=>x.id===L.a);
+  form(`Merge "${a.name}" into another artist`,[{n:'into',l:'Keep this artist (songs and albums move to them, then "'+a.name+'" is deleted)',t:'select',v:'',o:A.filter(x=>x.id!==a.id).map(x=>[x.id,x.name])}],async o=>{
+    const{error}=await sb.rpc('admin_merge_artists',{from_id:a.id,into_id:o.into});if(error)return fail(error);await log('Merged artists',a.name+' → '+A.find(x=>x.id===o.into)?.name);L.a=o.into;toast('Merged');views.lib()},'Merge');}
+async function delArtist(){const a=A.find(x=>x.id===L.a);if(AL.length)return toast('This artist still has albums. Move them, or use Merge.',true);
+  if(!confirm(`Delete artist "${a.name}"?`))return;const{error}=await sb.from('artists').delete().eq('id',a.id);if(error)return fail(error);await log('Deleted an artist',a.name);L.a=null;views.lib()}
+function editAlbum(l){
+  form(l?'Edit album':'New album',[{n:'title',l:'Album name (Amharic)',v:l?.title},{n:'release_type',l:'Type',t:'select',v:l?.release_type||'album',o:['album','single','ep','compilation'].map(x=>[x,x==='compilation'?'collection (many artists)':x])},{n:'release_date',l:'Release date',t:'date',v:l?.release_date},{n:'artist',l:'Artist',t:'select',v:l?.artist_id||L.a,o:A.map(x=>[x.id,x.name])},{n:'cover',l:'Cover picture',t:'file'}],async o=>{
+    const row={title:o.title.trim(),release_type:o.release_type,release_date:o.release_date||null};
+    const r=l?await sb.from('albums').update(row).eq('id',l.id).select('id').single():await sb.from('albums').insert({...row,artist_id:o.artist}).select('id').single();if(r.error)return fail(r.error);
+    if(o.cover){const p=await up(`albums/${r.data.id}-${Date.now()}.${slug(o.cover.name.split('.').pop())}`,o.cover);await sb.from('albums').update({cover_art_url:p}).eq('id',r.data.id)}
+    if(l&&o.artist!==l.artist_id){const m=await sb.rpc('admin_move_album',{album:l.id,artist:o.artist});if(m.error)return fail(m.error);L.a=o.artist}
+    await log(l?'Edited an album':'Created an album',row.title);toast('Saved');L.al=r.data.id;views.lib()});
+}
+async function delAlbum(){const l=AL.find(x=>x.id===L.al);if(!confirm(`Delete "${l.title}" and its ${T.length} songs? This can't be undone.`))return;
+  let r=await sb.from('songs').delete().eq('album_id',l.id);if(r.error)return fail(r.error);r=await sb.from('albums').delete().eq('id',l.id);if(r.error)return fail(r.error);await log('Deleted an album',l.title);L.al=null;toast('Deleted');views.lib()}
+function pickSongs(){const i=document.createElement('input');i.type='file';i.accept='audio/*';i.multiple=true;i.onchange=()=>{
+  const files=[...i.files],l=AL.find(x=>x.id===L.al);if(!files.length)return;
+  if(l.release_type==='compilation')form('Which artist sings these songs?',[{n:'who',l:'Artist',t:'select',v:'',o:A.filter(x=>x.name!=='Various Artists').map(x=>[x.id,x.name])}],o=>uploadSongs(files,o.who),'Upload');
+  else uploadSongs(files,L.a)};i.click()}
+async function uploadSongs(files,artistId){
+  let n=T.length;const l=AL.find(x=>x.id===L.al);
+  for(const f of files){try{toast(`Uploading ${f.name}…`);const title=f.name.replace(/\.[^.]+$/,'').replace(/^\d+\s*[-_. ]\s*/,'').trim(),ext=slug(f.name.split('.').pop());
+    const path=await up(`uploads/${l.id}/${String(++n).padStart(2,'0')}-${Date.now()}-${slug(title)}.${ext}`,f,'Songs');
+    const{error}=await sb.from('songs').insert({title,artist_id:artistId,album_id:l.id,track_number:n,file_url:path,duration_seconds:await dur(f)});if(error)throw error;await log('Added a song',title)}catch(x){fail(x)}}
+  toast('Done');loadTracks();loadAlbums(true)}
+
+const NOEDIT=/(^id$|_at$|^file_url$|^profile_image_url$|^cover_art_url$|^duration|count|embedding|^fts|^search|_id$)/;
+function extraFields(row,skip=[]){if(!row)return[];return Object.keys(row).filter(k=>!skip.includes(k)&&!NOEDIT.test(k)&&(row[k]===null||typeof row[k]!=='object')).map(k=>{const v=row[k];return{n:'x_'+k,k,v,l:k.replace(/_/g,' ').replace(/^./,c=>c.toUpperCase()),t:typeof v==='boolean'?'check':typeof v==='number'?'number':(/lyric|bio|desc|note|text|about/.test(k)||String(v||'').length>80)?'area':'text'}})}
+function extraRow(X,o){const r={};X.forEach(f=>{const v=o[f.n];r[f.k]=f.t==='check'?v:f.t==='number'?(v===''||v==null?null:Number(v)):(v===''?null:v)});return r}
+async function editSong(s){
+  const[{data:row,error},{data:als}]=await Promise.all([sb.from('songs').select('*').eq('id',s.id).single(),sb.from('albums').select('id,title,artists(name)').order('title').limit(2000)]);if(error)return fail(error);
+  const X=extraFields(row);
+  form(`Edit “${s.title}”`,[{n:'artist_id',l:'Artist',t:'select',v:row.artist_id,o:A.map(x=>[x.id,x.name])},{n:'album_id',l:'Album',t:'select',v:row.album_id,o:(als||[]).map(x=>[x.id,x.title+(x.artists?.name?' — '+x.artists.name:'')])},...X],async o=>{
+    const upd={...extraRow(X,o),artist_id:o.artist_id,album_id:o.album_id};if(!String(upd.title||'').trim())return fail(new Error('A song needs a title.'));
+    const{error}=await sb.from('songs').update(upd).eq('id',s.id);if(error)return fail(error);
+    $('#dlg').close();await log('Edited a song',upd.title);toast('Saved');loadTracks();loadAlbums(true)});
+}
+function songArtist(s){form(`Who sings "${s.title}"?`,[{n:'a',l:'Artist',t:'select',v:s.artist_id,o:A.map(x=>[x.id,x.name])}],async o=>{
+  const{error}=await sb.from('songs').update({artist_id:o.a}).eq('id',s.id);if(error)return fail(error);await log('Changed a song artist',s.title);toast('Saved');loadTracks()})}
+async function makeColl(){const l=AL.find(x=>x.id===L.al);if(!confirm(`Turn "${l.title}" into a collection? It moves under "Various Artists" and every song keeps its own artist.`))return;
+  const{error}=await sb.rpc('admin_make_collection',{album:l.id});if(error)return fail(error);await log('Made a collection',l.title);
+  const{data}=await sb.from('artists').select('id').eq('name','Various Artists').limit(1);if(data?.[0])L.a=data[0].id;toast('Now a collection');views.lib()}
+async function mergeAlbum(){const l=AL.find(x=>x.id===L.al);const{data}=await sb.from('albums').select('id,title,artists(name)').neq('id',l.id).order('title').limit(1000);
+  form(`Merge "${l.title}" into…`,[{n:'to',l:'Keep this album (all songs move into it, then "'+l.title+'" is deleted)',t:'select',v:'',o:(data||[]).map(x=>[x.id,`${x.artists?.name} — ${x.title}`])}],async o=>{
+    const{error}=await sb.rpc('admin_wrap_collection',{into_album:o.to,other_albums:[l.id],as_coll:false});if(error)return fail(error);await log('Merged albums',l.title);toast('Merged');L.al=o.to;views.lib()},'Merge')}
+async function moveDialog(s){const{data}=await sb.from('albums').select('id,title,artists(name)').order('title').limit(1000);
+  form(`Move "${s.title}" to…`,[{n:'to',l:'Album',t:'select',v:L.al,o:(data||[]).map(x=>[x.id,`${x.artists?.name} — ${x.title}`])}],async o=>moveSong(s.id,o.to),'Move')}
+async function moveSong(id,album){if(album===L.al)return;const{error}=await sb.rpc('admin_move_song',{song:id,album});if(error)return fail(error);await log('Moved a song','');toast('Moved');loadTracks();loadAlbums(true)}
+async function moveAlbum(id,artist){if(artist===L.a)return;const{error}=await sb.rpc('admin_move_album',{album:id,artist});if(error)return fail(error);await log('Moved an album','');toast('Album moved');const{data}=await sb.from('artists').select('id,name,bio,is_verified,profile_image_url,albums(count)').order('name');A=data;drawArtists();loadAlbums()}
+boot();
+</script><style>
+#ied{width:min(980px,96vw)}.ied{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:16px}.cvw{text-align:center;background:repeating-conic-gradient(#222 0 25%,#2c2c2c 0 50%) 0 0/16px 16px;border-radius:12px;padding:10px}
+#ic{max-width:100%;max-height:62vh;cursor:move;touch-action:none}.ctl{max-height:68vh;overflow:auto;padding-right:6px}.ctl label{display:block;margin:8px 0 2px}.ctl output{float:right;color:var(--gold)}.ctl input[type=range]{padding:0}
+.ctl .ghost{margin:2px 2px 2px 0}@media(max-width:800px){.ied{grid-template-columns:1fr}}.dbc{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+</style>
+<script>
+/* ===== GOD MODE addon: image studio, raw DB editor, safe uploads ===== */
+const F=[['brightness','Brightness',0,250,100],['contrast','Contrast',0,250,100],['saturate','Saturation',0,300,100],['hue','Hue',-180,180,0],['blur','Blur',0,20,0],['gray','Grayscale',0,100,0],['sepia','Sepia',0,100,0],['invert','Invert',0,100,0]];
+const PRE={Original:{},'B&W':{gray:100,contrast:115},Warm:{sepia:35,saturate:130,brightness:105},Cool:{hue:-20,saturate:110,brightness:102},Vivid:{saturate:170,contrast:115},Fade:{contrast:80,brightness:112,saturate:80}};
+const AR=[[1,'Square 1:1'],[1.7778,'Wide 16:9'],[3,'Banner 3:1'],[1.3333,'4:3'],[.75,'Portrait 3:4']],HF='filter' in CanvasRenderingContext2D.prototype;
+const mx=(a,b,t)=>a+(b-a)*t;
+function paint(S,cv,W){
+  const H=Math.round(W/S.ar),c=cv.getContext('2d'),f=S.f;cv.width=W;cv.height=H;c.fillStyle=S.bg;c.fillRect(0,0,W,H);
+  const sw=S.q%2,iw=sw?S.img.height:S.img.width,ih=sw?S.img.width:S.img.height,k=Math.max(W/iw,H/ih)*S.zoom;
+  c.save();if(HF)c.filter=`brightness(${f.brightness}%) contrast(${f.contrast}%) saturate(${f.saturate}%) hue-rotate(${f.hue}deg) blur(${f.blur*W/480}px) grayscale(${f.gray}%) sepia(${f.sepia}%) invert(${f.invert}%)`;
+  c.translate(W/2+S.x*W,H/2+S.y*W);c.rotate((S.q*90+S.fine)*Math.PI/180);c.scale(S.fh?-k:k,S.fv?-k:k);c.drawImage(S.img,-S.img.width/2,-S.img.height/2);c.restore();
+  if(!HF){const d=c.getImageData(0,0,W,H),p=d.data;for(let i=0;i<p.length;i+=4){let r=p[i],g=p[i+1],b=p[i+2];
+    [r,g,b]=[r,g,b].map(v=>(v*f.brightness/100-128)*f.contrast/100+128);let l=.299*r+.587*g+.114*b;[r,g,b]=[r,g,b].map(v=>l+(v-l)*f.saturate/100);
+    l=.299*r+.587*g+.114*b;[r,g,b]=[mx(r,l,f.gray/100),mx(g,l,f.gray/100),mx(b,l,f.gray/100)];const s=f.sepia/100;
+    [r,g,b]=[mx(r,.393*r+.769*g+.189*b,s),mx(g,.349*r+.686*g+.168*b,s),mx(b,.272*r+.534*g+.131*b,s)];const v=f.invert/100;
+    p[i]=mx(r,255-r,v);p[i+1]=mx(g,255-g,v);p[i+2]=mx(b,255-b,v)}c.putImageData(d,0,0)}
+}
+async function loadImg(v,bks){const us=/^https?:/.test(v)?[v]:bks.map(b=>pub(b,v));
+  for(const u of us){try{const r=await fetch(u,{cache:'no-store'});if(r.ok)return await createImageBitmap(await r.blob())}catch{}}
+  throw new Error('Could not load the current image. Pick a file from disk instead.')}
+async function saveImg(o,S){
+  const out=document.createElement('canvas');paint(S,out,S.w);const ext={'image/png':'png','image/webp':'webp'}[S.fmt]||'jpg';
+  const blob=await new Promise(r=>out.toBlob(r,S.fmt,S.qual/100));if(!blob)throw new Error('Could not render the image.');
+  const path=`${o.folder}/${o.id}-${Date.now()}.${ext}`;let bk=o.buckets[0],r=await sb.storage.from(bk).upload(path,blob,{contentType:S.fmt});
+  if(r.error&&o.buckets[1]){bk=o.buckets[1];r=await sb.storage.from(bk).upload(path,blob,{contentType:S.fmt})}if(r.error)throw r.error;
+  const url=sb.storage.from(bk).getPublicUrl(path).data.publicUrl,u=await sb.from(o.table).update({[o.col]:url}).eq('id',o.id).select('id').single();
+  if(u.error){await sb.storage.from(bk).remove([path]);throw u.error}   // integrity: no orphan file if the DB write fails
+  await log('Edited image',`${o.table}.${o.col} ${o.id}: ${o.cur||'none'} -> ${url}`);return url}
+async function studio(o){
+  const S={img:null,zoom:1,x:0,y:0,q:0,fine:0,fh:0,fv:0,f:{},ar:o.ar,w:o.w,fmt:'image/jpeg',qual:92,bg:'#000000'};F.forEach(a=>S.f[a[0]]=a[4]);
+  let d=$('#ied');if(!d){d=document.createElement('dialog');d.id='ied';document.body.append(d)}
+  const rg=(k,l,a,b,v,st=1)=>`<label>${l}<output>${v}</output><input type="range" data-k="${k}" min="${a}" max="${b}" step="${st}" value="${v}"></label>`;
+  d.innerHTML=`<h3>${esc(o.title)}</h3><div class="ied"><div class="cvw"><canvas id="ic" width="480" height="480"></canvas><p class="hint">Drag to move · scroll to zoom. Saving bakes every edit into a new image and updates the database.</p></div><div class="ctl">
+  <label>AI command<textarea id="iai" rows="2" placeholder="e.g. brighter, more vivid, crop tighter on the face, straighten"></textarea></label><button class="ghost" id="iaib">✨ Apply AI command</button><p class="hint" id="iain"></p>
+  <label>Replace with a file from disk<input type="file" id="if" accept="image/*"></label>
+  <label>Version history<select id="ih"><option value="">Loading…</option></select></label><button class="ghost" id="ir" disabled>Restore this version as-is</button>
+  <label>Presets</label>${Object.keys(PRE).map(p=>`<button class="ghost" data-p="${p}">${p}</button>`).join('')}
+  ${rg('zoom','Zoom',.2,4,1,.01)}${rg('fine','Angle',-45,45,0)}<div><button class="ghost" data-t="l">⟲ 90°</button><button class="ghost" data-t="r">⟳ 90°</button><button class="ghost" data-t="fh">Flip ↔</button><button class="ghost" data-t="fv">Flip ↕</button></div>
+  ${F.map(a=>rg('f_'+a[0],a[1],a[2],a[3],a[4])).join('')}
+  <label>Shape<select id="iar">${AR.map(a=>`<option value="${a[0]}" ${a[0]==o.ar?'selected':''}>${a[1]}</option>`).join('')}</select></label>
+  <label>Output width (px)<select id="iw">${[256,512,800,1200,1600,2400].map(w=>`<option ${w==o.w?'selected':''}>${w}</option>`).join('')}</select></label>
+  <label>Format<select id="ifm"><option value="image/jpeg">JPEG</option><option value="image/webp">WebP</option><option value="image/png">PNG</option></select></label>
+  ${rg('qual','Quality',40,100,92)}<label>Background (empty areas)<input type="color" id="ibg" value="#000000"></label></div></div>
+  <div class="row"><button class="ghost" id="ix">Close</button><button class="ghost" id="irs">Reset edits</button><button class="primary" id="isv">Save permanently</button></div>`;
+  const cv=$('#ic'),draw=()=>S.img&&paint(S,cv,480),sync=()=>d.querySelectorAll('[data-k]').forEach(i=>{const k=i.dataset.k,v=k.startsWith('f_')?S.f[k.slice(2)]:S[k];i.value=v;i.previousSibling.textContent=v}),
+    setImg=async v=>{try{S.img=await v;draw()}catch(x){fail(x)}};
+  d.showModal();o.cur&&setImg(loadImg(o.cur,o.buckets));
+  Promise.all(o.buckets.map(b=>sb.storage.from(b).list(o.folder,{search:String(o.id),limit:50}).then(r=>(r.data||[]).filter(x=>x.name.startsWith(o.id)).map(x=>sb.storage.from(b).getPublicUrl(o.folder+'/'+x.name).data.publicUrl)))).then(a=>{
+    const u=a.flat().reverse();$('#ih').innerHTML='<option value="">— choose —</option>'+u.map((x,i)=>`<option value="${x}">Version ${u.length-i}${x===o.cur?' (current)':''}</option>`).join('')});
+  d.oninput=e=>{const t=e.target,k=t.dataset.k;if(k){const v=+t.value;k.startsWith('f_')?S.f[k.slice(2)]=v:S[k]=v;t.previousSibling.textContent=v}
+    if(t.id==='iar')S.ar=+t.value;if(t.id==='iw')S.w=+t.value;if(t.id==='ifm')S.fmt=t.value;if(t.id==='ibg')S.bg=t.value;
+    if(t.id==='if'&&t.files[0])setImg(createImageBitmap(t.files[0]));if(t.id==='ih'){$('#ir').disabled=!t.value;t.value&&setImg(loadImg(t.value,[]))}draw()};
+  d.onclick=async e=>{const b=e.target.closest('button');if(!b)return;e.preventDefault();
+    if(b.dataset.p){Object.assign(S.f,Object.fromEntries(F.map(a=>[a[0],a[4]])),PRE[b.dataset.p]);sync()}
+    const t=b.dataset.t;if(t){t==='l'?S.q=(S.q+3)%4:t==='r'?S.q=(S.q+1)%4:S[t]=!S[t]}
+    if(b.id==='irs'){Object.assign(S,{zoom:1,x:0,y:0,q:0,fine:0,fh:0,fv:0});Object.assign(S.f,Object.fromEntries(F.map(a=>[a[0],a[4]])));sync()}
+    if(b.id==='iaib'){const c=$('#iai').value.trim();if(!c||!S.img)return toast('Load an image and type a command.',true);b.disabled=true;$('#iain').textContent='Thinking…';
+      try{draw();const st={filters:S.f,zoom:S.zoom,x:S.x,y:S.y,fine:S.fine,flipH:!!S.fh,flipV:!!S.fv},r=await sb.functions.invoke('ai-assist',{body:{action:'image',image:cv.toDataURL('image/jpeg',.8),command:c,state:st,ar:S.ar}});
+        if(r.error){let m=r.error.message;try{const j=await r.error.context.json();if(j?.error)m=j.error}catch{}throw new Error(m)}const x=r.data;if(x.error)throw new Error(x.error);
+        F.forEach(a=>{const v=x.filters?.[a[0]];if(typeof v==='number')S.f[a[0]]=Math.min(a[3],Math.max(a[2],v))});
+        [['zoom',.2,4],['fine',-45,45],['x',-1,1],['y',-1,1]].forEach(([k,lo,hi])=>{if(typeof x[k]==='number')S[k]=Math.min(hi,Math.max(lo,x[k]))});
+        if(typeof x.flipH==='boolean')S.fh=x.flipH;if(typeof x.flipV==='boolean')S.fv=x.flipV;
+        sync();$('#iain').textContent=x.notes||'Applied. Adjust or reset if needed, then Save.';await log('AI image edit',`${o.table}.${o.col} ${o.id}: ${c}`)}catch(x){fail(x);$('#iain').textContent=''}b.disabled=false}
+    if(b.id==='ix')return d.close();
+    if(b.id==='ir'){const u=$('#ih').value,r=await sb.from(o.table).update({[o.col]:u}).eq('id',o.id).select('id').single();if(r.error)return fail(r.error);await log('Restored image',`${o.table}.${o.col} ${o.id} -> ${u}`);toast('Restored');d.close();return o.done()}
+    if(b.id==='isv'){if(!S.img)return toast('Load an image first.',true);b.disabled=true;try{await saveImg(o,S);toast('Saved to database');d.close();o.done()}catch(x){fail(x)}b.disabled=false}draw()};
+  let dr=null;cv.onpointerdown=e=>{dr=[e.clientX,e.clientY];cv.setPointerCapture(e.pointerId)};cv.onpointerup=()=>dr=null;
+  cv.onpointermove=e=>{if(!dr)return;const w=cv.getBoundingClientRect().width;S.x+=(e.clientX-dr[0])/w;S.y+=(e.clientY-dr[1])/w;dr=[e.clientX,e.clientY];draw()};
+  cv.onwheel=e=>{e.preventDefault();S.zoom=Math.min(4,Math.max(.2,S.zoom*(e.deltaY<0?1.06:.94)));sync();draw()};
+}
+/* ----- hooks into the existing UI ----- */
+const _dt=drawTracks;drawTracks=function(){_dt();if(!AL.find(x=>x.id===L.al))return;
+  $('#c3 .ph>span:last-child')?.insertAdjacentHTML('afterbegin','<button class="ghost" data-gx="cover">Cover studio</button> ');
+  document.querySelectorAll('#c3 .trk>span:last-child').forEach((s,i)=>s.insertAdjacentHTML('beforeend',` <button class="ghost" data-gx="aud" data-s="${T[i].id}">Replace audio</button>`))};
+const _da=drawAlbums;drawAlbums=function(){_da();$('#c2 .ph>span:last-child')?.insertAdjacentHTML('afterbegin','<button class="ghost" data-gx="aph">Photo</button> <button class="ghost" data-gx="ahd">Header</button> ')};
+const _uv=views.users;views.users=async function(q=''){await _uv(q);document.querySelectorAll('button[data-u]').forEach(b=>b.insertAdjacentHTML('afterend',`<button class="ghost" data-gx="av" data-id="${b.dataset.u}">Avatar</button>`))};
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-gx]');if(!b)return;const g=b.dataset.gx,back=()=>views.lib();
+  if(g==='cover'){const l=AL.find(x=>x.id===L.al);studio({title:'Cover studio · '+l.title,table:'albums',id:l.id,col:'cover_art_url',cur:l.cover_art_url,folder:'albums',buckets:['Album Arts'],ar:1,w:1200,done:back})}
+  if(g==='aph'||g==='ahd'){const a=A.find(x=>x.id===L.a),h=g==='ahd',c=h?'header_image_url':'profile_image_url',{data}=await sb.from('artists').select(c).eq('id',a.id).single();
+    studio({title:(h?'Header image · ':'Profile picture · ')+a.name,table:'artists',id:a.id,col:c,cur:data?.[c],folder:h?'artist-headers':'artists',buckets:['Artist profiles','Album Arts'],ar:h?3:1,w:h?1600:800,done:back})}
+  if(g==='av'){const{data:u,error}=await sb.from('users').select('id,display_name,avatar_url').eq('id',b.dataset.id).single();if(error)return fail(error);
+    studio({title:'Avatar · '+u.display_name,table:'users',id:u.id,col:'avatar_url',cur:u.avatar_url,folder:'avatars',buckets:['Album Arts'],ar:1,w:512,done:()=>views.users()})}
+  if(g==='aud')replAudio(T.find(t=>t.id===b.dataset.s))});
+/* ----- songs: safe upload (rolls back orphan files), drag & drop from disk, replace audio ----- */
+uploadSongs=async function(files,artistId){const l=AL.find(x=>x.id===L.al);let n=T.length,ok=0,bad=[];
+  for(let i=0;i<files.length;i++){const f=files[i];let path;try{toast(`Uploading ${i+1}/${files.length}: ${f.name}`);
+    const title=f.name.replace(/\.[^.]+$/,'').replace(/^\d+\s*[-_. ]\s*/,'').trim();path=`uploads/${l.id}/${String(n+1).padStart(2,'0')}-${Date.now()}-${slug(title)}.${slug(f.name.split('.').pop())}`;
+    await up(path,f,'Songs');const{error}=await sb.from('songs').insert({title,artist_id:artistId,album_id:l.id,track_number:n+1,file_url:path,duration_seconds:await dur(f)});
+    if(error){await sb.storage.from('Songs').remove([path]);throw error}n++;ok++;await log('Added a song',title)}catch(x){bad.push(f.name+': '+(x.message||x))}}
+  toast(`${ok} song(s) added`+(bad.length?`, ${bad.length} failed: ${bad[0]}`:''),!!bad.length);loadTracks();loadAlbums(true)};
+function addFiles(files){const l=AL.find(x=>x.id===L.al);if(!files.length||!l)return;
+  l.release_type==='compilation'?form('Which artist sings these songs?',[{n:'who',l:'Artist',t:'select',v:'',o:A.filter(x=>x.name!=='Various Artists').map(x=>[x.id,x.name])}],o=>uploadSongs(files,o.who),'Upload'):uploadSongs(files,L.a)}
+pickSongs=function(){const i=document.createElement('input');i.type='file';i.accept='audio/*';i.multiple=true;i.onchange=()=>addFiles([...i.files]);i.click()};
+document.addEventListener('dragover',e=>{if(e.dataTransfer?.types?.includes('Files')&&e.target.closest?.('#c3'))e.preventDefault()});
+document.addEventListener('drop',e=>{if(!e.target.closest?.('#c3')||!e.dataTransfer.files.length)return;e.preventDefault();e.stopPropagation();addFiles([...e.dataTransfer.files].filter(f=>f.type.startsWith('audio/')))},true);
+function replAudio(s){const i=document.createElement('input');i.type='file';i.accept='audio/*';i.onchange=async()=>{const f=i.files[0];if(!f)return;let path;
+  try{toast('Uploading…');path=`uploads/${L.al}/${String(s.track_number||0).padStart(2,'0')}-${Date.now()}-${slug(s.title)}.${slug(f.name.split('.').pop())}`;await up(path,f,'Songs');
+    const{error}=await sb.from('songs').update({file_url:path,duration_seconds:await dur(f)}).eq('id',s.id);if(error){await sb.storage.from('Songs').remove([path]);throw error}
+    await sb.storage.from('Songs').remove([s.file_url]);await log('Replaced audio',s.title);toast('Audio replaced');loadTracks()}catch(x){fail(x)}};i.click()}
+/* ----- Database: every table, every column ----- */
+document.querySelector('nav .out').insertAdjacentHTML('beforebegin','<button data-v="db">Database</button>');
+const DBT=['artists','albums','songs','users','recommended_songs','playlists','playlist_songs','user_song_favorites','user_song_plays','admin_audit_log'],SYS=/^(id|created_at|updated_at)$/;let DB={t:'artists',q:'',p:0};
+const dbFields=(row,C)=>C.filter(c=>!SYS.test(c)).map(c=>{const v=row?.[c],j=v!==null&&typeof v==='object';return{n:'c_'+c,k:c,l:c,j,v:j?JSON.stringify(v,null,1):v,t:typeof v==='boolean'?'check':typeof v==='number'?'number':(j||String(v??'').length>80)?'area':'text'}});
+const dbVal=(f,v)=>f.t==='check'?v:f.j?(v.trim()?JSON.parse(v):null):v===''?null:f.t==='number'?Number(v):v;
+views.ai=async function(){
+  M().innerHTML='<h2>AI name check</h2><p class="sub">The Amharic expert reviews artist, album and song names. Nothing changes until you tick a row and press Apply.</p><div class="box"><button class="primary" id="aigo">Scan library</button> <button class="ghost" id="aiap" disabled>Apply ticked</button> <button class="ghost" id="aitest">Test AI connection</button> <span id="aip" class="sub"></span></div><div class="box" id="aio">No scan yet.</div>';
+  let errs=[];const ai=async p=>{try{const r=await sb.functions.invoke('ai-assist',{body:p});if(r.error){let m=r.error.message;try{const j=await r.error.context.json();if(j?.error)m=j.error}catch{}throw new Error(m)}if(r.data?.error)throw new Error(r.data.error);return r.data}catch(x){errs.push(x.message);if(errs.length>=3)throw new Error('The AI stopped after repeated errors: '+x.message);return {}}},
+    S=new Map(),prog=t=>$('#aip').textContent=t,
+    add=(k,id,old,nw,c,why,into)=>{if(!nw||nw===old&&k!=='merge')return;S.set(k+id,{k,id,old,nw,c:+c||0,why:why||'',into})},
+    draw2=()=>{const r=[...S.values()].sort((a,b)=>b.c-a.c);$('#aiap').disabled=!r.length;
+      $('#aio').innerHTML=r.length?'<table style="width:100%;border-collapse:collapse">'+r.map(x=>`<tr style="border-top:1px solid var(--line)"><td><input type="checkbox" data-i="${x.k+x.id}" ${x.c>=.9&&x.k!=='merge'?'checked':''}></td><td><b>${{merge:'Merge artist',artists:'Artist',albums:'Album',songs:'Song'}[x.k]}</b></td><td>${esc(x.old)} → <b>${esc(x.nw)}</b><br><span class="sub">${esc(x.why)} (${Math.round(x.c*100)}%)</span></td></tr>`).join('')+'</table>':'No problems found.'};
+  $('#aitest').onclick=async e=>{e.target.disabled=true;prog('Testing the AI…');try{const r=await sb.functions.invoke('ai-assist',{body:{action:'ping'}});
+    if(r.error){let m=r.error.message;try{m=(await r.error.context.json()).error||m}catch{}throw new Error(m)}const d=r.data;
+    prog(!d.key_set?'The function has no GEMINI_API_KEY secret.':d.model_ok===false?`Model "${d.model}" is not available: ${d.model_error}`:d.generate_ok?`AI works (${d.model}, ${d.ms} ms).`:`AI call failed: ${d.generate_error}`)}
+    catch(x){prog('Could not reach the AI function: '+x.message)}e.target.disabled=false};
+  $('#aigo').onclick=async e=>{e.target.disabled=true;S.clear();errs=[];try{
+    const{data:ar,error}=await sb.from('artists').select('id,name').order('name').limit(5000);if(error)throw error;const an=new Map(ar.map(a=>[a.id,a.name]));
+    for(let i=0;i<ar.length;i+=70){prog(`Artists ${Math.min(i+70,ar.length)}/${ar.length}`);const r=await ai({action:'names',kind:'artists',items:ar.slice(i,i+80)});
+      (r.merges||[]).forEach(m=>an.has(m.from)&&an.has(m.into)&&m.from!==m.into&&add('merge',m.from,an.get(m.from),an.get(m.into),m.confidence,m.why,m.into));
+      (r.artists||[]).forEach(m=>an.has(m.id)&&add('artists',m.id,an.get(m.id),String(m.new||'').trim(),m.confidence,m.why))}
+    const{data:al,error:e2}=await sb.from('albums').select('id,title,artists(name),songs(id,title)').order('title').limit(3000);if(e2)throw e2;
+    const at=new Map(al.map(a=>[a.id,a.title])),st=new Map(al.flatMap(a=>(a.songs||[]).map(s=>[s.id,s.title])));
+    for(let i=0;i<al.length;i+=8){prog(`Albums ${Math.min(i+8,al.length)}/${al.length}`);
+      const r=await ai({action:'names',kind:'albums with their songs',items:al.slice(i,i+8).map(a=>({id:a.id,title:a.title,artist:a.artists?.name,songs:(a.songs||[]).map(s=>({id:s.id,title:s.title}))}))});
+      (r.albums||[]).forEach(m=>at.has(m.id)&&add('albums',m.id,at.get(m.id),String(m.new||'').trim(),m.confidence,m.why));
+      (r.songs||[]).forEach(m=>st.has(m.id)&&add('songs',m.id,st.get(m.id),String(m.new||'').trim(),m.confidence,m.why));draw2()}
+    prog(errs.length?`Finished, but ${errs.length} batch(es) failed: ${errs[0]}`:'Done.');draw2()}catch(x){fail(x);prog('Stopped: '+x.message)}e.target.disabled=false};
+  $('#aiap').onclick=async e=>{const ids=[...document.querySelectorAll('#aio [data-i]:checked')].map(c=>c.dataset.i);if(!ids.length)return toast('Tick something first.',true);
+    if(!confirm(`Apply ${ids.length} change(s)? Merges cannot be undone.`))return;e.target.disabled=true;let n=0;
+    for(const id of ids.sort((a,b)=>(S.get(a).k==='merge')-(S.get(b).k==='merge'))){const x=S.get(id);let er;
+      if(x.k==='merge')er=(await sb.rpc('admin_merge_artists',{from_id:x.id,into_id:x.into})).error;
+      else er=(await sb.from(x.k).update({[x.k==='artists'?'name':'title']:x.nw}).eq('id',x.id)).error;
+      if(er){fail(er);continue}n++;S.delete(id);await log('AI name fix',`${x.k}: ${x.old} → ${x.nw}`)}
+    toast(`Applied ${n}`);draw2();e.target.disabled=false}};
+views.db=async function(){
+  const s=await sb.from(DB.t).select('*').limit(1);if(s.error&&fail(s.error))return;const C=Object.keys(s.data?.[0]||{}),tc=C.filter(c=>typeof s.data[0][c]==='string'&&!/(^id$|_id$|_at$)/.test(c));
+  let q=sb.from(DB.t).select('*').range(DB.p*50,DB.p*50+49);if(C.includes('created_at'))q=q.order('created_at',{ascending:false});
+  if(DB.q&&tc.length)q=q.or(tc.map(c=>`${c}.ilike.%${DB.q.replace(/[,()%]/g,' ')}%`).join(','));
+  const{data:R,error}=await q;if(error&&fail(error))return;const sh=C.slice(0,6),pk=C.includes('id');
+  M().innerHTML=head('Database','Direct access to every row and column. Every change is permanent and written to the activity log with before/after values.')+`<div class="tools"><select id="dbt" style="max-width:230px">${DBT.map(t=>`<option ${t===DB.t?'selected':''}>${t}</option>`).join('')}</select><input id="dbq" placeholder="Search text columns, press Enter" value="${esc(DB.q)}"><button class="ghost" id="dbn" ${s.data?.length?'':'disabled'}>+ New row</button><button class="ghost" id="dbp" ${DB.p?'':'disabled'}>‹ Prev</button><button class="ghost" id="dbx" ${R.length<50?'disabled':''}>Next ›</button></div>`+
+   table([...sh,''],R.map((r,i)=>`<tr>${sh.map(c=>`<td><div class="dbc">${esc(typeof r[c]==='object'&&r[c]!==null?JSON.stringify(r[c]):r[c])}</div></td>`).join('')}<td class="act">${pk?`<button class="ghost" data-e="${i}">Edit</button><button class="ghost danger" data-x="${i}">Delete</button>`:''}</td></tr>`));
+  $('#dbt').onchange=e=>{DB={t:e.target.value,q:'',p:0};views.db()};$('#dbq').onkeydown=e=>{if(e.key==='Enter'){DB.q=e.target.value.trim();DB.p=0;views.db()}};
+  $('#dbp').onclick=()=>{DB.p--;views.db()};$('#dbx').onclick=()=>{DB.p++;views.db()};
+  $('#dbn').onclick=()=>form('New row in '+DB.t,dbFields(s.data[0],C).map(f=>({...f,v:f.t==='check'?false:''})),async o=>{const row={};
+    for(const f of dbFields(s.data[0],C)){try{const v=dbVal(f,o[f.n]);if(v!==null&&v!=='')row[f.k]=v}catch{return fail(new Error(f.k+' is not valid JSON'))}}
+    const{data:n,error}=await sb.from(DB.t).insert(row).select('*').single();if(error)return fail(error);await log('Created row',`${DB.t}/${n.id??''} ${JSON.stringify(row)}`);toast('Created');views.db()},'Create');
+  M().onclick=async e=>{const b=e.target.closest('button[data-e],button[data-x]');if(!b)return;
+    if(b.dataset.x){const r=R[+b.dataset.x];if(!confirm(`Permanently delete this ${DB.t} row?\n${JSON.stringify(r).slice(0,200)}\n(A full copy is kept in the activity log.)`))return;
+      const{data:d,error}=await sb.from(DB.t).delete().eq('id',r.id).select('id');if(error)return fail(error);if(!d.length)return fail(new Error('Nothing was deleted (no permission?).'));
+      await log('Deleted row',`${DB.t}/${r.id} backup ${JSON.stringify(r)}`);toast('Deleted');return views.db()}
+    const r=R[+b.dataset.e],Fs=dbFields(r,C);
+    form(`Edit ${DB.t} · ${r.id}`,Fs,async o=>{const ch={},from={};
+      for(const f of Fs){let v;try{v=dbVal(f,o[f.n])}catch{return fail(new Error(f.k+' is not valid JSON'))}if(JSON.stringify(v)!==JSON.stringify(r[f.k])){ch[f.k]=v;from[f.k]=r[f.k]}}
+      if(!Object.keys(ch).length)return toast('No changes');let u=sb.from(DB.t).update(ch).eq('id',r.id);if(r.updated_at)u=u.eq('updated_at',r.updated_at);
+      const{error:er}=await u.select('id').single();if(er)return fail(er.code==='PGRST116'?new Error('Row changed elsewhere or is not editable. Reload and retry.'):er);
+      await log('Edited row',`${DB.t}/${r.id} from ${JSON.stringify(from)} to ${JSON.stringify(ch)}`);toast('Saved');views.db()})}
+};
+</script>
+<script>
+/* ===== Home artists (admin-chosen) + Top charts ===== */
+document.querySelector('nav .out').insertAdjacentHTML('beforebegin','<button data-v="feat">Home artists</button><button data-v="top">Top charts</button>');
+views.feat=async function(){
+  const{data:rows,error}=await sb.from('featured_artists').select('id,position,active,artists(name)').order('position');if(error&&fail(error))return;
+  M().innerHTML=head('Home artists','The scrolling artist strip on the home screen shows exactly these artists, in this order. Remove them all to return to automatic trending.')+`<div class="box"><h3>Add an artist</h3><input id="fs" placeholder="Search artists by name" autocomplete="off"><div id="fr"></div></div>`+
+   table(['#','Artist','Shown',''],rows.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.artists?.name)}</td><td><input type="checkbox" data-on="${r.id}" ${r.active?'checked':''}></td><td class="act"><button class="ghost" data-up="${i}" ${i?'':'disabled'}>Up</button><button class="ghost" data-dn="${i}" ${i<rows.length-1?'':'disabled'}>Down</button><button class="ghost danger" data-rm="${r.id}">Remove</button></td></tr>`));
+  let t;$('#fs').oninput=e=>{clearTimeout(t);t=setTimeout(async()=>{const q=e.target.value.trim();if(!q){$('#fr').innerHTML='';return}
+    const{data:s}=await sb.from('artists').select('id,name').ilike('name','%'+q+'%').limit(8);
+    $('#fr').innerHTML=(s||[]).map(x=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0"><span>${esc(x.name)}</span><button class="ghost" data-add="${x.id}">Add</button></div>`).join('')||'<p class="sub">No artists match.</p>'},250)};
+  const re=async()=>{for(let j=0;j<rows.length;j++){const{error}=await sb.from('featured_artists').update({position:j+1}).eq('id',rows[j].id);if(error)return fail(error)}await log('Reordered home artists','');views.feat()};
+  M().onclick=async e=>{const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.add){const{error}=await sb.from('featured_artists').insert({artist_id:b.dataset.add,position:rows.length+1});if(error)return fail(error.code==='23505'?new Error('Already on the home screen.'):error);await log('Featured an artist',b.dataset.add);views.feat()}
+    if(b.dataset.rm){const{error}=await sb.from('featured_artists').delete().eq('id',b.dataset.rm);if(error)return fail(error);await log('Unfeatured an artist','');views.feat()}
+    if(b.dataset.up){const i=+b.dataset.up;rows.splice(i-1,0,rows.splice(i,1)[0]);re()}if(b.dataset.dn){const i=+b.dataset.dn;rows.splice(i+1,0,rows.splice(i,1)[0]);re()}};
+  M().onchange=async e=>{const t=e.target;if(t.dataset.on){const{error}=await sb.from('featured_artists').update({active:t.checked}).eq('id',t.dataset.on);error?fail(error):(toast(t.checked?'Shown':'Hidden'),log('Toggled a featured artist',''))}};
+};
+let TOPD=7;
+views.top=async function(){
+  const{data:d,error}=await sb.rpc('admin_top_charts',{days:TOPD||null,lim:10});if(error&&fail(error))return;
+  const box=(h,k,u)=>`<div class="box"><h3>${h}</h3>`+(d[k].map((r,i)=>`<div style="display:flex;justify-content:space-between;gap:10px;padding:5px 0"><span><b>${i+1}.</b> ${esc(r.name)} <small style="color:var(--mut)">${esc(r.sub)}</small></span><span style="white-space:nowrap"><b>${fmt(r.n)}</b> <small style="color:var(--mut)">${u}</small></span></div>`).join('')||'<p class="sub">No plays in this period.</p>')+'</div>';
+  M().innerHTML=head('Top charts','Plays from all accounts.')+`<div class="tools"><select id="tr" style="max-width:200px">${[[1,'Last 24 hours'],[7,'Last 7 days'],[30,'Last 30 days'],[365,'Last year'],[0,'All time']].map(x=>`<option value="${x[0]}" ${x[0]===TOPD?'selected':''}>${x[1]}</option>`).join('')}</select></div>`+
+   `<div class="two">${box('Top songs','songs','plays')}${box('Top albums','albums','plays')}</div><div class="two">${box('Top artists','artists','plays')}${box('Top listeners','users','plays')}</div>`;
+  $('#tr').onchange=e=>{TOPD=+e.target.value;views.top()};
+};
+</script>
+<script>
+/* ===== Listener insights ===== */
+document.querySelector('nav .out').insertAdjacentHTML('beforebegin','<button data-v="ins">Listener insights</button>');
+const hms=s=>s>=3600?Math.floor(s/3600)+'h '+Math.floor(s%3600/60)+'m':Math.max(0,Math.floor(s/60))+'m',ago=d=>{if(!d)return'never';const s=(Date.now()-new Date(d))/1000;return s<90?'just now':s<3600?Math.floor(s/60)+' min ago':s<86400?Math.floor(s/3600)+' h ago':day(d)};
+let INS={q:'',t:0};
+views.ins=async function(){
+  clearInterval(INS.t);const{data:U,error}=await sb.rpc('admin_listener_overview');if(error&&fail(error))return;
+  const q=INS.q.toLowerCase(),L2=U.filter(u=>[u.name,u.email].join(' ').toLowerCase().includes(q)),on=U.filter(u=>u.online);
+  M().innerHTML=head('Listener insights','Who is on the site right now, what they play, and how long they stay. Refreshes every 30 seconds. Time on site is counted from the new tracking, so older history only has plays.')+
+   `<div class="strip"><div><strong>${on.length}</strong><span>Online now</span></div><div><strong>${U.filter(u=>u.last_seen&&Date.now()-new Date(u.last_seen)<864e5).length}</strong><span>Active in 24h</span></div><div><strong>${hms(U.reduce((t,u)=>t+Number(u.seconds),0))}</strong><span>Total time on site</span></div><div><strong>${fmt(U.reduce((t,u)=>t+Number(u.plays),0))}</strong><span>Total plays</span></div></div>`+
+   `<div class="tools"><input id="iq" placeholder="Filter by name or email" value="${esc(INS.q)}"></div>`+
+   table(['Listener','Status','Now playing','Time on site','Sessions','Plays','Favorites','Top artist',''],L2.map(u=>`<tr><td>${esc(u.name)}<br><small style="color:var(--mut)">${esc(u.email)}</small></td><td>${u.online?'<span class="tag">● online</span>':'<small style="color:var(--mut)">'+ago(u.last_seen)+'</small>'}</td><td>${esc(u.now_playing||'')}</td><td>${hms(u.seconds)}</td><td>${u.sessions}</td><td>${fmt(u.plays)}</td><td>${u.favorites}</td><td>${esc(u.top_artist||'')}</td><td class="act"><button class="ghost" data-iu="${u.id}">Details</button></td></tr>`));
+  $('#iq').onkeydown=e=>{if(e.key==='Enter'){INS.q=e.target.value.trim();views.ins()}};
+  M().onclick=async e=>{const b=e.target.closest('[data-iu]');if(!b)return;const u=U.find(x=>x.id===b.dataset.iu),{data:d,error}=await sb.rpc('admin_user_insights',{uid:u.id});if(error)return fail(error);
+    const off=-new Date().getTimezoneOffset()/60,hrs=Array.from({length:24},(_,h)=>({d:h+':00',n:0}));d.hours.forEach(x=>hrs[(x.h+off+24)%24].n=Number(x.n));
+    const list=(h,r)=>`<h3 style="margin:14px 0 6px">${h}</h3>`+(r.map((x,i)=>`<div style="display:flex;justify-content:space-between;gap:8px;padding:3px 0"><span>${i+1}. ${esc(x.name)} <small style="color:var(--mut)">${esc(x.sub)}</small></span><b>${x.n??''}</b></div>`).join('')||'<p class="hint">Nothing yet.</p>');
+    let dl=$('#insd');if(!dl){dl=document.createElement('dialog');dl.id='insd';dl.style.width='min(860px,96vw)';document.body.append(dl)}
+    dl.innerHTML=`<h3>${esc(u.name)} <small style="color:var(--mut)">${esc(u.email)}</small></h3><p class="sub">${u.online?'Online now'+(u.now_playing?' — playing '+esc(u.now_playing):''):'Last seen '+ago(u.last_seen)} · ${fmt(d.totals.plays)} plays on ${d.totals.days_active} different days · ${hms(u.seconds)} on site over ${u.sessions} visits (avg ${u.sessions?hms(u.seconds/u.sessions):'0m'}) · ${esc(u.tier)} · ${esc(u.country_code||'')}</p>
+     <div class="two"><div>${list('Favourite songs',d.top_songs)}${list('Favourite artists',d.top_artists)}${list('Favourite albums',d.top_albums)}</div><div>${list('Favorited songs',d.favorites.map(x=>({...x,n:''})))}<h3 style="margin:14px 0 6px">When they listen (your local time)</h3>${bars(hrs)}</div></div>
+     <h3 style="margin:14px 0 6px">Recent plays</h3>${table(['Song','Artist','Album','When'],d.recent.map(r=>`<tr><td>${esc(r.song)}</td><td>${esc(r.artist)}</td><td>${esc(r.album)}</td><td>${day(r.played_at)}</td></tr>`))}
+     <h3 style="margin:14px 0 6px">Visits</h3>${table(['Started','Length','Device','Last page'],d.sessions.map(s=>`<tr><td>${day(s.started_at)}</td><td>${hms(s.seconds)}</td><td>${esc(s.device)}</td><td>${esc(s.page)}</td></tr>`))}<div class="row"><button class="ghost" onclick="this.closest('dialog').close()">Close</button></div>`;dl.showModal()};
+  INS.t=setInterval(()=>{if(document.querySelector('nav [data-v="ins"].on')&&!document.querySelector('#insd[open]'))views.ins();else if(!document.querySelector('nav [data-v="ins"].on'))clearInterval(INS.t)},30000);
+};
+</script>
+<script>
+/* ===== Playlists (admin-provided; shown to every listener) ===== */
+document.querySelector('nav .out').insertAdjacentHTML('beforebegin','<button data-v="pls">Playlists</button>');
+const PLC='id,name,description,cover_url,active,position';
+const plFields=p=>[{n:'n',l:'Name',v:p?.name||''},{n:'d',l:'Description',v:p?.description||''},{n:'c',l:'Cover image link (optional, empty = collage of song covers)',v:p?.cover_url||''}];
+views.pls=async function(){
+  const{data,error}=await sb.from('playlists').select(PLC+',playlist_songs(count)').eq('is_official',true).order('position',{nullsFirst:false}).order('created_at');if(error&&fail(error))return;
+  M().innerHTML=head('Playlists','Playlists made here appear for every listener under Playlists on the site.')+`<div class="tools"><button class="primary" id="pn">+ New playlist</button></div>`+
+   table(['#','Name','Songs','Shown',''],data.map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p.name)}<br><small style="color:var(--mut)">${esc(p.description)}</small></td><td>${p.playlist_songs?.[0]?.count??0}</td><td><input type="checkbox" data-on="${p.id}" ${p.active?'checked':''}></td><td class="act"><button class="ghost" data-up="${i}" ${i?'':'disabled'}>Up</button><button class="ghost" data-dn="${i}" ${i<data.length-1?'':'disabled'}>Down</button><button class="ghost" data-m="${p.id}">Manage</button><button class="ghost danger" data-x="${p.id}">Delete</button></td></tr>`));
+  $('#pn').onclick=()=>form('New playlist',plFields(),async o=>{if(!o.n.trim())return fail(new Error('Give the playlist a name.'));
+    const{data:n,error}=await sb.from('playlists').insert({name:o.n.trim(),description:o.d.trim()||null,cover_url:o.c.trim()||null,is_official:true,active:true,position:data.length+1,user_id:null}).select('id').single();if(error)return fail(error);await log('Created a playlist',o.n);toast('Created');views.pm(n.id)},'Create');
+  const re=async()=>{await Promise.all(data.map((r,j)=>sb.from('playlists').update({position:j+1}).eq('id',r.id)));await log('Reordered playlists','');views.pls()};
+  M().onclick=async e=>{const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.m)return views.pm(b.dataset.m);
+    if(b.dataset.x){const p=data.find(r=>r.id===b.dataset.x);if(!confirm(`Delete the playlist "${p.name}"? Its songs are not deleted.`))return;const{error}=await sb.from('playlists').delete().eq('id',p.id);if(error)return fail(error);await log('Deleted a playlist',p.name);views.pls()}
+    if(b.dataset.up){const i=+b.dataset.up;data.splice(i-1,0,data.splice(i,1)[0]);re()}if(b.dataset.dn){const i=+b.dataset.dn;data.splice(i+1,0,data.splice(i,1)[0]);re()}};
+  M().onchange=async e=>{const t=e.target;if(t.dataset.on){const{error}=await sb.from('playlists').update({active:t.checked}).eq('id',t.dataset.on);error?fail(error):(toast(t.checked?'Shown to listeners':'Hidden'),log('Toggled a playlist',''))}};
+};
+views.pm=async function(id){
+  const[a,b]=await Promise.all([sb.from('playlists').select(PLC).eq('id',id).single(),sb.from('playlist_songs').select('song_id,position,songs(title,artists(name))').eq('playlist_id',id).order('position')]);
+  if(a.error)return fail(a.error);if(b.error)return fail(b.error);const p=a.data,rows=b.data||[];
+  M().innerHTML=head(p.name,'Choose the songs and their order.')+`<div class="tools"><button class="ghost" id="pb">‹ All playlists</button><button class="ghost" id="pe">Edit details</button></div><div class="box"><h3>Add a song</h3><input id="pms" placeholder="Search songs by title" autocomplete="off"><div id="pmr"></div></div>`+
+   table(['#','Song',''],rows.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.songs?.title)}<br><small style="color:var(--mut)">${esc(r.songs?.artists?.name)}</small></td><td class="act"><button class="ghost" data-up="${i}" ${i?'':'disabled'}>Up</button><button class="ghost" data-dn="${i}" ${i<rows.length-1?'':'disabled'}>Down</button><button class="ghost danger" data-rm="${r.song_id}">Remove</button></td></tr>`));
+  $('#pb').onclick=()=>go('pls');
+  $('#pe').onclick=()=>form('Edit playlist',plFields(p),async o=>{if(!o.n.trim())return fail(new Error('Give the playlist a name.'));const{error}=await sb.from('playlists').update({name:o.n.trim(),description:o.d.trim()||null,cover_url:o.c.trim()||null}).eq('id',id);if(error)return fail(error);await log('Edited a playlist',o.n);toast('Saved');views.pm(id)},'Save');
+  let t;$('#pms').oninput=e=>{clearTimeout(t);t=setTimeout(async()=>{const q=e.target.value.trim();if(!q){$('#pmr').innerHTML='';return}
+    const{data:s}=await sb.from('songs').select('id,title,artists(name)').ilike('title','%'+q+'%').limit(8);
+    $('#pmr').innerHTML=(s||[]).map(x=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0"><span>${esc(x.title)} <small style="color:var(--mut)">${esc(x.artists?.name)}</small></span><button class="ghost" data-add="${x.id}">Add</button></div>`).join('')||'<p class="sub">No songs match.</p>'},250)};
+  const re=async()=>{await Promise.all(rows.map((r,j)=>sb.from('playlist_songs').update({position:j+1}).eq('playlist_id',id).eq('song_id',r.song_id)));views.pm(id)};
+  M().onclick=async e=>{const x=e.target.closest('button');if(!x)return;
+    if(x.dataset.add){const{error}=await sb.from('playlist_songs').insert({playlist_id:id,song_id:x.dataset.add,position:rows.length+1});if(error)return fail(error.code==='23505'?new Error('That song is already in this playlist.'):error);await log('Added a song to a playlist',p.name);views.pm(id)}
+    if(x.dataset.rm){const{error}=await sb.from('playlist_songs').delete().eq('playlist_id',id).eq('song_id',x.dataset.rm);if(error)return fail(error);await log('Removed a song from a playlist',p.name);views.pm(id)}
+    if(x.dataset.up){const i=+x.dataset.up;rows.splice(i-1,0,rows.splice(i,1)[0]);re()}if(x.dataset.dn){const i=+x.dataset.dn;rows.splice(i+1,0,rows.splice(i,1)[0]);re()}};
+};
+</script>
+</body></html>
